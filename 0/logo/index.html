@@ -13,9 +13,15 @@
     <div style="width: 500px; height: 500px; display: inline-block;background-color: #EFEFEF">
       <canvas id="logo-canvas" width="500" height="500"></canvas>
     </div>
-      <textarea id="source-code" style="height: 500px; width: 300px; font-size: 1.2em;" placeholder="在这里可以写一些命令控制小乌龟"></textarea>
+    <div style="width: 300px; height: 500px; display: inline-block;">
+      <pre id="target" style="padding: 10px 10px;width: 280px; height: 278px; overflow: auto; border: solid 1px; margin: 0;">
+这里会生成代码...
+        </pre>
+      <textarea id="source-code" style="width: 300px; height: 200px; font-size: 1.2em;" placeholder="在这里可以写一些命令控制小乌龟"></textarea>
+    </div>
       <p style="text-align: right">
-        <button id="run">执行</button> <button id="reset">重置</button>
+        <button id="run">执行</button>
+        <button id="reset">重置</button>
       </p>
     </div>
   </div>

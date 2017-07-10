@@ -75,12 +75,14 @@ const logo = new Logo('logo', 'logo-canvas')
 
 document.getElementById('run').onclick = () => {
   const source = document.getElementById('source-code').value
+  const target_el = document.getElementById('target')
   let target
   try {
     target = parser.parse(source)
   } catch (err) {
     alert(err)
   }
+  target_el.innerHTML = target
   const func = new Function('logo', target)
   func(logo)
 }
