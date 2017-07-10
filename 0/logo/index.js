@@ -27,7 +27,7 @@ class Logo {
 
   reset(){
     for (const line of this.lines) line.remove()
-    this._setStatus_({ left: this.canvas.width / 2, top: this.canvas.height / 2 })
+    this.goOrigin()
     this.canvas.renderAll()
   }
 
@@ -59,6 +59,10 @@ class Logo {
     }
   }
 
+  goOrigin() {
+    this._setStatus_({ left: this.canvas.width / 2, top: this.canvas.height / 2, angle: 0 })
+  }
+
 }
 
 const logo = new Logo('logo', 'logo-canvas')
@@ -69,8 +73,7 @@ document.getElementById('run').onclick = () => {
   try {
     target = parser.parse(source)
   } catch (err) {
-    alert('语法错误', err)
-    debugger;
+    alert(err)
   }
   const func = new Function('logo', target)
   func(logo)
