@@ -29,7 +29,7 @@ exponent                                [e|E][\+|\-]{digit}+
 /** reserved **/
 reserved                                {keywords}|{symbols}
 
-keywords                                "令"|"对于"|"从"|"到"|"如果"|"则"|
+keywords                                "令"|"存在"|"从"|"到"|"如果"|"则"|
                                         "否则"|"什么都不干"|"开始画画"|"结束画画"|"回到原点"|
                                         "顺时针旋转"|"度"|"逆时针旋转"|"向前移动"|"像素"|
                                         "且"|"或"|
@@ -88,7 +88,7 @@ program
 
 statement
   : '令' VAL '=' expr                                    { $$ = `let ${$2} = ${$4}` }
-  | '对于' VAL '从' expr '到' expr '，' statement        { $$ = `for(let ${$2}=${$4}; ${$2}<=${$6}; ${$2}++){ ${$8} }` }
+  | '存在' VAL '从' expr '到' expr '，' statement        { $$ = `for(let ${$2}=${$4}; ${$2}<=${$6}; ${$2}++){ ${$8} }` }
   | '如果' boolexpr '则' statement '，' '否则' statement { $$ = `if(${$2}){ ${$4} }else{ ${$7} }` }
   | '什么都不干'                                         { $$ = `void(0)` }
   | '开始画画'                                           { $$ = `logo.drawStart()` }
