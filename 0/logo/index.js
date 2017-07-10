@@ -21,6 +21,12 @@ class Logo {
 
   _setStatus_(new_status){
     Object.assign(this.status, new_status)
+    let {angle} = this.status
+    while (angle < 0 || angle >= 360) {
+      if (angle >= 360) angle  = angle - 360
+      else if (angle < 0) angle = angle + 360
+    }
+    this.status.angle = angle
     this.turtle.set(this.status)
     this.canvas.renderAll()
   }
