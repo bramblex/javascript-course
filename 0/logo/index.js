@@ -1,64 +1,81 @@
 'use strict'
 
-// const fs = require('fs')
-// const path = require('path')
-// const parser = require('./parser')
-
-// const source = fs.readFileSync(path.join(__dirname, 'test.logo'), 'utf-8')
-
 // const target = parser.parse(source)
 
-// console.log(source)
-// console.log('=================')
-// console.log(target)
+// 开始画画。
+// 对于n从1到3，顺时针旋转60度并向前移动100像素。
 
-// eval(target)
-
-const canvas = new fabric.Canvas('logo-cavans')
+const toR = a => a * 0.017453293
 
 class Logo {
   constructor (img_id, canvas_id) {
-    this.canvas = new fabric.Canvas(canvas_id)
-    this.img_el = document.getElementById('logo')
+    this.canvas = new fabric.StaticCanvas(canvas_id)
+    this.img_el = document.getElementById(img_id)
     this.lines = []
-
     this.is_draw = false
-
-    this._initLogoStatus_()
-
+    this.status = { left: 0, top: 0, angle: 0 }
+    this.turtle = new fabric.Image(this.img_el, {originX: 'center', originY: 'center'})
+    this.canvas.add(this.turtle)
+    this.reset()
   }
 
-  _initLogoStatus_() {
-    this.status = {
-      left: this.canvas.width / 2,
-      top: this.canvas.height / 2,
-      angle: 0
+  _setStatus_(new_status){
+    Object.assign(this.status, new_status)
+    this.turtle.set(this.status)
+    this.canvas.renderAll()
+  }
+
+  reset(){
+    for (const line of this.lines) line.remove()
+    this._setStatus_({ left: this.canvas.width / 2, top: this.canvas.height / 2 })
+    this.canvas.renderAll()
+  }
+
+  drawStart(){ this.is_draw = true }
+
+  drawEnd(){ this.is_draw = false }
+
+  clockwise(n) {
+    const {angle} = this.status
+    this._setStatus_({angle: angle + n})
+  }
+
+  anticlockwise(n) {
+    const {angle} = this.status
+    this._setStatus_({angle: angle - n})
+  }
+
+  goAhead(n) {
+    const {left, top, angle} = this.status
+    const x = n * Math.sin(toR(angle))
+    const y = n * Math.cos(toR(angle))
+    const _left = left + x
+    const _top = top - y
+    this._setStatus_({ left: _left, top: _top })
+    if (this.is_draw) {
+      const line = new fabric.Line([left, top, _left, _top], {stroke: 'green', strokeWidth: 0.9})
+      this.lines.push(line)
+      this.canvas.add(line)
     }
   }
+
 }
 
-// const logo_status = { left: 250, top: 250, angle: 0, is_draw: false }
-// const logo_tt = new fabric.Image(, Object.assign({
-//   originX: 'center',
-//   originY: 'center',
-// }, logo_status))
-// canvas.add(logo_tt)
+const logo = new Logo('logo', 'logo-canvas')
 
-// const lines = []
+document.getElementById('run').onclick = () => {
+  const source = document.getElementById('source-code').value
+  let target
+  try {
+    target = parser.parse(source)
+  } catch (err) {
+    alert('语法错误', err)
+    debugger;
+  }
+  const func = new Function('logo', target)
+  func(logo)
+}
 
-// const reset = () => {
-//   logo_status = { left: 250, top: 250, angle: 0 }
-//   log.set(logo_status)
-//   for (let line of lines)  line.remove()
-//   lines = []
-// }
-
-// const inner_func = {
-//   'drawStart': () => { 
-//     logo_status.is_draw = true 
-//     logo_tt.set(logo_status)
-//   },
-//   'drawEnd': () => { logo_status.is_draw = false },
-//   'clockwiseRotation': (d) => { logo_status.angle += d },
-//   'anticlockwiseRotation': (d) => { logo_status.angle -= d },
-// }
+document.getElementById('reset').onclick = () => {
+  logo.reset()
+}

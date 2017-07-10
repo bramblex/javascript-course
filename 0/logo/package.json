@@ -2,5 +2,11 @@
   "name": "logo",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "jison": "^0.4.17"
+  },
+  "scripts": {
+    "build:parser": "$(npm bin)/jison parser.jison -m js"
+  }
 }

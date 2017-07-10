@@ -6,17 +6,25 @@
 </head>
 
 <body>
-  <div><h1><img id="logo" src="./tt.png" style="height:0.8em;"></img>第一课的玩具</h1></div>
+  <div><h1><img id="logo" src="./tt.png" style="height:0.8em;"></img>会画画的小乌龟</h1></div>
 
   <div style="width: 810px">
     <div style="width: 500px; height: 500px; display: inline-block;background-color: #EFEFEF">
-      <canvas id="logo-cavans" width="500" height="500"></canvas>
+      <canvas id="logo-canvas" width="500" height="500"></canvas>
     </div>
-      <textarea id="source-code" style="height: 500px; width: 300px"></textarea>
+      <textarea id="source-code" style="height: 500px; width: 300px; font-size: 1.2em;" placeholder="在这里可以写一些命令控制小乌龟"></textarea>
       <p style="text-align: right">
         <button id="run">执行</button> <button id="reset">重置</button>
       </p>
     </div>
+  </div>
+
+  <div>
+    <h2>一些实例</h2>
+    <pre><code>
+开始画画。
+对于n从1到3，顺时针旋转60度并向前移动100像素。
+      </code></pre>
   </div>
 
   <script src="./fabric.min.js"></script>

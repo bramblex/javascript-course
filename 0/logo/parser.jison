@@ -32,7 +32,8 @@ reserved                                {keywords}|{symbols}
 keywords                                "令"|"对于"|"从"|"到"|"如果"|"则"|
                                         "否则"|"什么都不干"|"开始画画"|"结束画画"|
                                         "顺时针旋转"|"度"|"逆时针旋转"|"向前移动"|"像素"|
-                                        "且"|"或"
+                                        "且"|"或"|
+                                        "并"
 
 symbols                                 "="|"/="|"+"|"-"|"*"|"/"|"%"|"<="|">="|">"|"<"|
                                         ","|"，"|"。"|"."|
@@ -67,7 +68,7 @@ whitespaces                             ([\ \t\f\n])+
 
 %start source
 
-%left '或' '且'
+%left '或' '且' '并'
 %left '=' '/=' 
 %left '>' '<' '>=' '<=' 
 %left '+' '-' 
@@ -90,15 +91,16 @@ statement
   | '对于' VAL '从' expr '到' expr '，' statement        { $$ = `for(let ${$2}=${$4}; ${$2}<=${$6}; ${$2}++){ ${$8} }` }
   | '如果' boolexpr '则' statement '，' '否则' statement { $$ = `if(${$2}){ ${$4} }else{ ${$7} }` }
   | '什么都不干'                                         { $$ = `void(0)` }
-  | '开始画画'                                           { $$ = `drawStart()` }
-  | '结束画画'                                           { $$ = `drawEnd()` }
+  | '开始画画'                                           { $$ = `logo.drawStart()` }
+  | '结束画画'                                           { $$ = `logo.drawEnd()` }
   | move                                                 { $$ = $1 }
   ;
 
 move
-  : '逆时针旋转' expr '度'                               { $$ = `clockwiseRotation(${$2})` }
-  | '顺时针旋转' expr '度'                               { $$ = `anticlockwiseTotation(${$2})` }
-  | '向前移动' expr '像素'                               { $$ = `goAhead(${$2})` }
+  : '逆时针旋转' expr '度'                               { $$ = `logo.clockwise(${$2})` }
+  | '顺时针旋转' expr '度'                               { $$ = `logo.anticlockwise(${$2})` }
+  | '向前移动' expr '像素'                               { $$ = `logo.goAhead(${$2})` }
+  | move '并' move                                       { $$ = `${$1}; ${$3}`}
   ;
 
 expr
