@@ -7,6 +7,6 @@
     "jison": "^0.4.17"
   },
   "scripts": {
-    "build:parser": "$(npm bin)/jison parser.jison -m js"
+    "build:simple-logo": "$(npm bin)/simple-logo/jison parser.jison -m js"
   }
 }

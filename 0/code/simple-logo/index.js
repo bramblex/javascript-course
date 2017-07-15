@@ -33,6 +33,7 @@ class Logo {
 
   reset(){
     for (const line of this.lines) line.remove()
+    this.is_draw = false
     this.goOrigin()
     this.canvas.renderAll()
   }
@@ -78,9 +79,10 @@ document.getElementById('run').onclick = () => {
   const target_el = document.getElementById('target')
   let target
   try {
-    target = parser.parse(source)
+    target = js_beautify(parser.parse(source), {indent_size: 2})
   } catch (err) {
-    alert(err)
+    // alert(err)
+    console.log(err.message)
   }
   target_el.innerHTML = target
   const func = new Function('logo', target)
