@@ -7,47 +7,49 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+function getChildElementIndex(element) {
+    const { parentElement } = element;
+    if (!parentElement) {
+        throw new Error('Has not parent');
+    }
+    const { children } = parentElement;
+    for (let i = 0, l = children.length; i < l; i++) {
+        if (children[i] === element)
+            return i;
+    }
+    throw new Error('impossable');
+}
 function getElementPathTo(_element) {
     let head = 'body';
     let path = [];
     const body = document.body;
     let element = _element;
     while (true) {
-        const { id, parentElement } = element;
-        if (parentElement === null) {
-            throw new Error('impossable');
-        }
-        else if (parentElement === body) {
-            head = 'body';
+        const { parentElement, id } = element;
+        if (element === body) {
             break;
         }
-        else if (id && id !== '') {
-            head = id;
+        if (id && id !== '') {
+            head = '#' + id;
+            break;
         }
-        else {
-            const { children } = parentElement;
-            const l = children.length;
-            for (let i = 0; i < l; i++) {
-                const child = children[i];
-                if (child === element) {
-                    path.push(i);
-                    break;
-                }
-            }
+        path.push(getChildElementIndex(element));
+        if (!parentElement) {
+            throw new Error('impossable');
         }
         element = parentElement;
     }
     path = path.reverse();
-    return { head, path };
+    return [head, path];
 }
-function getElemntFromPath(element_path) {
-    const { head, path } = element_path;
+function getElementFromPath(element_path) {
+    const [head, path] = element_path;
     let element;
-    if (head === false) {
-        element === document.body;
+    if (head === 'body') {
+        element = document.body;
     }
     else {
-        element === document.getElementById(head);
+        element = document.getElementById(head.replace('#', ''));
     }
     for (let i of path) {
         element = element.children[i];
@@ -60,21 +62,40 @@ function getElemntFromPath(element_path) {
 function pickElementByClick() {
     return __awaiter(this, void 0, void 0, function* () {
         const _onclick = document.onclick;
+        const _onmouseover = document.onmouseover;
+        const _onmouseout = document.onmouseout;
+        let _backgroundColor = null;
         const promise = new Promise(resolve => {
             document.onclick =
                 event => {
+                    event.stopPropagation();
                     event.preventDefault();
+                    const element = event.target;
+                    element.style.backgroundColor = _backgroundColor;
                     resolve(event.target);
                 };
         });
+        document.onmouseover = event => {
+            const element = event.target;
+            _backgroundColor = element.style.backgroundColor;
+            element.style.backgroundColor = "yellow";
+        };
+        document.onmouseout = event => {
+            const element = event.target;
+            element.style.backgroundColor = _backgroundColor;
+        };
         const element = yield promise;
+        document.onclick = _onclick;
+        document.onmouseover = _onmouseover;
+        document.onmouseout = _onmouseout;
         return getElementPathTo(element);
     });
 }
 function test() {
     return __awaiter(this, void 0, void 0, function* () {
         const path = yield pickElementByClick();
-        console.log();
+        console.log(JSON.stringify(path));
+        console.log(getElementFromPath(path));
     });
 }
 //# sourceMappingURL=pick-element.js.map
