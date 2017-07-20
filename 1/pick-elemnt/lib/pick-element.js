@@ -23,10 +23,15 @@ function getElementPathTo(_element) {
     let head = 'body';
     let path = [];
     const body = document.body;
+    const html = body.parentElement;
     let element = _element;
     while (true) {
         const { parentElement, id } = element;
         if (element === body) {
+            break;
+        }
+        if (element === html) {
+            head = 'html';
             break;
         }
         if (id && id !== '') {
@@ -47,6 +52,9 @@ function getElementFromPath(element_path) {
     let element;
     if (head === 'body') {
         element = document.body;
+    }
+    else if (head === 'html') {
+        element = document.body.parentElement;
     }
     else {
         element = document.getElementById(head.replace('#', ''));

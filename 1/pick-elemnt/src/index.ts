@@ -18,16 +18,15 @@ function getElementPathTo(_element: HTMLElement): ElementPath {
   let head: string = 'body'
   let path: number[] = []
   const body = document.body
+  const html = body.parentElement
 
   let element = _element
 
   while (true) {
     const { parentElement, id } = element
     if (element === body) { break }
-    if (id && id !== '') {
-      head = '#' + id
-      break
-    }
+    if (element === html) { head = 'html'; break }
+    if (id && id !== '') { head = '#' + id; break }
     path.push(getChildElementIndex(element))
     if (!parentElement) { throw new Error('impossable') }
     element = parentElement
@@ -43,6 +42,8 @@ function getElementFromPath(element_path: ElementPath): HTMLElement {
 
   if (head === 'body') {
     element = document.body
+  } else if (head === 'html') {
+    element = document.body.parentElement
   } else {
     element = document.getElementById(head.replace('#', ''))
   }
