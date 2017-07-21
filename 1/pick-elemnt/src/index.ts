@@ -1,5 +1,7 @@
 'use strict'
 
+import { SimpleMVVM } from './SimpleMVVM'
+
 type ElementPath = [string, number[]]
 
 function getChildElementIndex(element: HTMLElement): number {
@@ -100,8 +102,6 @@ async function test() {
 }
 
 // function createUi() {
-//   const div = document.createElement('div')
-//   div.id = ""
 //   div.innerHTML = `
 //   `
 //   document.body.appendChild(div)
@@ -109,3 +109,11 @@ async function test() {
 
 // function render(data){
 // }
+
+const div = document.createElement('div')
+div.id = "lalalala"
+
+const vm = new SimpleMVVM('lalala', {}, data => `
+<div>
+</div>
+`)
