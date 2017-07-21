@@ -98,3 +98,14 @@ async function test() {
   console.log(JSON.stringify(path))
   console.log(getElementFromPath(path))
 }
+
+// function createUi() {
+//   const div = document.createElement('div')
+//   div.id = ""
+//   div.innerHTML = `
+//   `
+//   document.body.appendChild(div)
+// }
+
+// function render(data){
+// }
