@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "target": "es2015",
-    "module": "system",
+    "module": "commonjs",
     "sourceMap": true,
-    "outFile": "lib/pick-element.js",
+    "outDir": "lib/",
     "strictNullChecks": true,
     "declaration": true,
     "jsx": "preserve"

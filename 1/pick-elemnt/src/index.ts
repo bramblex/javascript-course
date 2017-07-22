@@ -1,99 +1,8 @@
 'use strict'
 
-import { SimpleMVVM } from './SimpleMVVM'
-
-type ElementPath = [string, number[]]
-
-function getChildElementIndex(element: HTMLElement): number {
-  const { parentElement } = element
-  if (!parentElement) {
-    throw new Error('Has not parent')
-  }
-  const { children } = parentElement
-  for (let i = 0, l = children.length; i < l; i++) {
-    if (children[i] === element) return i
-  }
-  throw new Error('impossable')
-}
-
-function getElementPathTo(_element: HTMLElement): ElementPath {
-  let head: string = 'body'
-  let path: number[] = []
-  const body = document.body
-  const html = body.parentElement
-
-  let element = _element
-
-  while (true) {
-    const { parentElement, id } = element
-    if (element === body) { break }
-    if (element === html) { head = 'html'; break }
-    if (id && id !== '') { head = '#' + id; break }
-    path.push(getChildElementIndex(element))
-    if (!parentElement) { throw new Error('impossable') }
-    element = parentElement
-  }
-
-  path = path.reverse()
-  return [head, path]
-}
-
-function getElementFromPath(element_path: ElementPath): HTMLElement {
-  const [head, path] = element_path
-  let element
-
-  if (head === 'body') {
-    element = document.body
-  } else if (head === 'html') {
-    element = document.body.parentElement
-  } else {
-    element = document.getElementById(head.replace('#', ''))
-  }
-
-  for (let i of path) {
-    element = element.children[i]
-    if (!element) {
-      throw new Error('Cannot find Element from path: ' + JSON.stringify(element_path))
-    }
-  }
-
-  return element
-}
-
-async function pickElementByClick() {
-  const _onclick = document.onclick
-  const _onmouseover = document.onmouseover
-  const _onmouseout = document.onmouseout
-
-  let _backgroundColor: string | null = null
-  const promise: Promise<HTMLElement> = new Promise(resolve => {
-    document.onclick =
-      event => {
-        event.stopPropagation()
-        event.preventDefault()
-        const element = event.target as HTMLElement
-        element.style.backgroundColor = _backgroundColor
-        resolve(event.target as HTMLElement)
-      }
-  })
-
-  document.onmouseover = event => {
-    const element = event.target as HTMLElement
-    _backgroundColor = element.style.backgroundColor
-    element.style.backgroundColor = "yellow"
-  }
-  document.onmouseout = event => {
-    const element = event.target as HTMLElement
-    element.style.backgroundColor = _backgroundColor
-  }
-
-  const element = await promise
-
-  document.onclick = _onclick
-  document.onmouseover = _onmouseover
-  document.onmouseout = _onmouseout
-  return getElementPathTo(element)
-}
+import { SimpleVM } from './simple-vm'
+import { ElementPath, getElementFromPath, pickElementByClick} from './element-picker'
+import { box, css } from './utils'
 
 async function test() {
   const path = await pickElementByClick()
@@ -101,19 +10,49 @@ async function test() {
   console.log(getElementFromPath(path))
 }
 
-// function createUi() {
-//   div.innerHTML = `
-//   `
-//   document.body.appendChild(div)
-// }
+const id = 'element-picker-box'
+const ui = box(id)
 
-// function render(data){
-// }
-
-const div = document.createElement('div')
-div.id = "lalalala"
-
-const vm = new SimpleMVVM('lalala', {}, data => `
-<div>
-</div>
+const style = css(`
+#${id} {
+  position: fixed;
+  right: 0;
+  top: 0;
+  padding: 0.5em 1em;
+  background-color: #EFEFEF;
+}
 `)
+
+// init UI
+
+export const vm = new SimpleVM({
+  el: ui,
+  data: {
+    msg: 'hello',
+    _item: '',
+    list: []
+  },
+  funcs: {
+    change: (vm, target, event) => {
+      vm.modify(data => {
+        const _target = (<HTMLInputElement>target)
+        data._item = _target.value
+      })
+    },
+    submit: (vm, target, event) => {
+      vm.modify(data => {
+        data.list.push(data._item)
+        data._item = ''
+      })
+    }
+  },
+  template: data => `
+    <div>
+      <h2>${data.msg}</h2>
+      <input data-on-change="change" value="${data._item}"></input><button data-on-click="submit">提交</button>
+      <ul>
+        ${data.list.map(item => `<li>${item}</li>`).join('')}
+      </ul>
+    </div>
+  `
+})
