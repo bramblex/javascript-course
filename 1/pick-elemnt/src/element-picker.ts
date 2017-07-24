@@ -1,5 +1,7 @@
+'use strict'
 
-export type ElementPath = [string, number[]]
+import {wait} from './utils'
+
 
 function getChildElementIndex(element: HTMLElement): number {
   const { parentElement } = element
@@ -13,7 +15,7 @@ function getChildElementIndex(element: HTMLElement): number {
   throw new Error('impossable')
 }
 
-export function getElementPathTo(_element: HTMLElement): ElementPath {
+export function getElementPathTo(_element: HTMLElement): string {
   let head: string = 'body'
   let path: number[] = []
   const body = document.body
@@ -32,11 +34,11 @@ export function getElementPathTo(_element: HTMLElement): ElementPath {
   }
 
   path = path.reverse()
-  return [head, path]
+  return [head, ...path].join('/')
 }
 
-export function getElementFromPath(element_path: ElementPath): HTMLElement {
-  const [head, path] = element_path
+export function getElementFromPath(element_path: string): HTMLElement {
+  const [head, ...path] = element_path.split('/')
   let element
 
   if (head === 'body') {
@@ -59,15 +61,19 @@ export function getElementFromPath(element_path: ElementPath): HTMLElement {
 
 export async function pickElementByClick() {
   const _onclick = document.onclick
+  const _onmousedown = document.onmousedown
   const _onmouseover = document.onmouseover
   const _onmouseout = document.onmouseout
 
   let _backgroundColor: string | null = null
   const promise: Promise<HTMLElement> = new Promise(resolve => {
     document.onclick =
-      event => {
+      async event => {
         event.stopPropagation()
         event.preventDefault()
+      }
+    document.onmousedown =
+      async event => {
         const element = event.target as HTMLElement
         element.style.backgroundColor = _backgroundColor
         resolve(event.target as HTMLElement)
@@ -85,6 +91,7 @@ export async function pickElementByClick() {
   }
 
   const element = await promise
+  await wait(100) // 延迟事件
 
   document.onclick = _onclick
   document.onmouseover = _onmouseover

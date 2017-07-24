@@ -1,13 +1,10 @@
 'use strict'
 
 import { SimpleVM } from './simple-vm'
-import { ElementPath, getElementFromPath, pickElementByClick} from './element-picker'
+import { getElementFromPath, pickElementByClick} from './element-picker'
 import { box, css } from './utils'
 
 async function test() {
-  const path = await pickElementByClick()
-  console.log(JSON.stringify(path))
-  console.log(getElementFromPath(path))
 }
 
 const id = 'element-picker-box'
@@ -17,9 +14,30 @@ const style = css(`
 #${id} {
   position: fixed;
   right: 0;
-  top: 0;
+  / *top: ${window.innerHeight / 2}px; */
+  z-index: 10000;
+  bottom: 20px;
+}
+
+#${id} .button {
+  line-height: 0.8em;
+  color: #FFF;
+  height: 1em;
+  width: 1em;
+  background-color: red;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  border-radius: 0.3em;
+}
+
+#${id} .content {
   padding: 0.5em 1em;
   background-color: #EFEFEF;
+}
+
+#${id} .hidden {
+  display: none;
 }
 `)
 
@@ -28,28 +46,36 @@ const style = css(`
 export const vm = new SimpleVM({
   el: ui,
   data: {
-    msg: 'hello',
-    _item: '',
-    list: []
+    title: '元素捕获器',
+    list: [],
+    mini_size: true
   },
   funcs: {
-    change: (vm, target, event) => {
+    toggle: (vm) => {
       vm.modify(data => {
-        const _target = (<HTMLInputElement>target)
-        data._item = _target.value
+        if (data.mini_size) {
+          data.mini_size = false
+        } else {
+          data.mini_size = true
+        }
       })
     },
-    submit: (vm, target, event) => {
+    pickElement: async (vm) => {
       vm.modify(data => {
-        data.list.push(data._item)
-        data._item = ''
+        data.mini_size = true
+      })
+      const path = await pickElementByClick()
+      vm.modify(data => {
+        data.list.push(path)
+        data.mini_size = false
       })
     }
   },
   template: data => `
-    <div>
-      <h2>${data.msg}</h2>
-      <input data-on-change="change" value="${data._item}"></input><button data-on-click="submit">提交</button>
+    <div class="button" data-on-click="toggle">${data.mini_size ? '+' : '-'}</div>
+    <div class="content ${data.mini_size ? 'hidden' : ''}">
+      <h2>${data.title}</h2>
+        <button data-on-click="pickElement">捕获元素</button>
       <ul>
         ${data.list.map(item => `<li>${item}</li>`).join('')}
       </ul>

@@ -1,10 +1,5 @@
 'use strict'
 
-export const event_map = {
-  click: 'mouseup',
-  change: 'focusout'
-}
-
 export type CallbackFunc = (vm: SimpleVM, el: HTMLElement, event: Event) => void
 
 export interface VMOpts {
@@ -32,24 +27,21 @@ export class SimpleVM {
 
     const el = this.el
 
-    for (const alias_event_name in event_map) {
-      const event_name = event_map[alias_event_name]
-
-      el.addEventListener(event_name, function (event) {
-        let target: HTMLElement | null = <HTMLElement>event.target
-
-        while (target && target !== el) {
-          const dataset_name = 'on' + alias_event_name.slice(0, 1).toUpperCase() + alias_event_name.slice(1)
-          const func_name = target.dataset[dataset_name]
-          if (func_name && vm.funcs[func_name]) {
-            const func = vm.funcs[func_name]
-            func(vm, target, event)
-          }
-          target = target.parentElement
-        }
-      })
-
-    }
+    // for (const event_name in el) {
+    //   el.addEventListener(event_name, event => {
+    //     let target: HTMLElement | null = <HTMLElement>event.target
+    //     while (target && target !== el) {
+    //       // const
+    //       // const dataset_name = 'on' + alias_event_name.slice(0, 1).toUpperCase() + alias_event_name.slice(1)
+    //       // const func_name = target.dataset[dataset_name]
+    //       // if (func_name && vm.funcs[func_name]) {
+    //       //   const func = vm.funcs[func_name]
+    //       //   func(vm, target, event)
+    //       // }
+    //       target = target.parentElement
+    //     }
+    //   })
+    // }
 
     this.data = data
     this.template = template

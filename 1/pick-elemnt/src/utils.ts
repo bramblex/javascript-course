@@ -15,3 +15,7 @@ export function box(id: string): HTMLElement {
   document.body.appendChild(div)
   return div
 }
+
+export function wait(ms: number): Promise<undefined> {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
